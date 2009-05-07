@@ -134,10 +134,12 @@ void runexe::printInvocationResult(const InvocationParams& invocationParams,
 
     case FAIL :
         //////////////////////////////////////////////////////////////////////////
+        cout << "FAIL" << endl;
         break;
 
     case CRASH :
         //////////////////////////////////////////////////////////////////////////
+        cout << "CRASH" << endl;
         break;
 
     case TIME_LIMIT_EXCEEDED :
@@ -157,16 +159,11 @@ void runexe::printInvocationResult(const InvocationParams& invocationParams,
         break;
 
     case IDLENESS_LIMIT_EXCEEDED :
-        //////////////////////////////////////////////////////////////////////////
-        /*
         cout << "Idleness limit exceeded" << endl
-            << "Program utilized less than " << requiredLoad
-            << "% of processor time for more than " << idlenessLimit << " sec" << endl
+            << "Detected program idle " << endl
             << "  time consumed: " << time << " sec" << endl
             << "  time passed:   " << passedTime << " sec" << endl
             << "  peak memory:   " << memory << " bytes" << endl;
-        */
-        //////////////////////////////////////////////////////////////////////////
         break;
 
     case SECURITY_VIOLATION :
@@ -189,24 +186,23 @@ void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
     result.push_back("<?xml version = \"1.1\" encoding = \"UTF-8\"?>");
     result.push_back("");
     result.push_back("<invocationResult>");
-    result.push_back("    <invocationVerdict>");
-    result.push_back("        " + invocationVerdictToString(invocationResult.getInvocationVerdict()));
-    result.push_back("    </invocationVerdict>");
-    result.push_back("    <exitCode>");
-    result.push_back("        " + Strings::integerToString(invocationResult.getExitCode()));
-    result.push_back("    </exitCode>");
-    result.push_back("    <processorTime>");
-    result.push_back("        " + Strings::integerToString(invocationResult.getTime()));
-    result.push_back("    </processorTime>");
-    result.push_back("    <passedTime>");
-    result.push_back("        " + Strings::integerToString(invocationResult.getPassedTime()));
-    result.push_back("    </passedTime>");
-    result.push_back("    <consumedMemory>");
-    result.push_back("        " + Strings::integerToString(invocationResult.getMemory()));
-    result.push_back("    </consumedMemory>");
-    result.push_back("    <comment>");
-    result.push_back("        " + invocationResult.getComment());
-    result.push_back("    </comment>");
+    result.push_back("    <invocationVerdict>" +
+            invocationVerdictToString(invocationResult.getInvocationVerdict()) +
+            "</invocationVerdict>");
+    result.push_back("    <exitCode>" +
+            Strings::integerToString(invocationResult.getExitCode()) +
+            "</exitCode>");
+    result.push_back("    <processorTime>" +
+            Strings::integerToString(invocationResult.getTime()) +
+            "</processorTime>");
+    result.push_back("    <passedTime>" +
+            Strings::integerToString(invocationResult.getPassedTime()) +
+            "</passedTime>");
+    result.push_back("    <consumedMemory>" +
+            Strings::integerToString(invocationResult.getMemory()) +
+            "</consumedMemory>");
+    result.push_back("    <comment>" + invocationResult.getComment() +
+            "</comment>");
     result.push_back("</invocationResult>");
 
     int resultSize = (int)result.size();
