@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
     Subprocess_SetStringA(process, RUNLIB_COMMAND_LINE, invocationParams.getCommandLine().c_str());
     Subprocess_SetInt(process, RUNLIB_TIME_LIMIT, invocationParams.getTimeLimit() * 10000LL);
-    Subprocess_SetInt(process, RUNLIB_MEMORY_LIMIT, invocationParams.getMemoryLimit());    
+    Subprocess_SetInt(process, RUNLIB_MEMORY_LIMIT, invocationParams.getMemoryLimit());
 
     string redirectInput = invocationParams.getRedirectInput();
     if (!redirectInput.empty())
@@ -40,6 +40,18 @@ int main(int argc, char* argv[])
     string homeDirectory = invocationParams.getHomeDirectory();
     if (!homeDirectory.empty())
         Subprocess_SetStringA(process, RUNLIB_CURRENT_DIRECTORY, homeDirectory.c_str());
+
+    string userName = invocationParams.getUserName();
+    if (!userName.empty())
+        Subprocess_SetStringA(process, RUNLIB_USERNAME, userName.c_str());
+
+    string domain = invocationParams.getDomain();
+    if (!domain.empty())
+        Subprocess_SetStringA(process, RUNLIB_DOMAIN, domain.c_str());
+
+    string password = invocationParams.getPassword();
+    if (!password.empty())
+        Subprocess_SetStringA(process, RUNLIB_PASSWORD, password.c_str());
 
     Subprocess_Start(process);
     Subprocess_Wait(process);
