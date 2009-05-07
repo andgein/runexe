@@ -6,11 +6,8 @@
 namespace runexe
 {
     const int RUN_EXIT_FAILURE = 2147483647;
-    const std::string version = "0.0 r2";
+    const std::string version = "0.0 r3";
     const std::string copyrightYears = "2009";
-
-    const int INFINITE_LIMIT = 2000000000;
-    const long long INFINITE_LIMIT_INT64 = 1000000000000000000LL;
 
     const bool RETURN_EXIT_CODE = false;
     const bool SCREEN_OUTPUT = true;

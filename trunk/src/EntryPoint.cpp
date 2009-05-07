@@ -19,8 +19,10 @@ int main(int argc, char* argv[])
 
     Subprocess* process = Subprocess_Create();
 
+    Subprocess_SetBool(process, RUNLIB_CHECK_IDLENESS, 1);
+
     Subprocess_SetStringA(process, RUNLIB_COMMAND_LINE, invocationParams.getCommandLine().c_str());
-    Subprocess_SetInt(process, RUNLIB_TIME_LIMIT, invocationParams.getTimeLimit());
+    Subprocess_SetInt(process, RUNLIB_TIME_LIMIT, invocationParams.getTimeLimit() * 10000LL);
     Subprocess_SetInt(process, RUNLIB_MEMORY_LIMIT, invocationParams.getMemoryLimit());    
 
     string redirectInput = invocationParams.getRedirectInput();

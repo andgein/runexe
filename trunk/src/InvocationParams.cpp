@@ -6,9 +6,24 @@
 using namespace runexe;
 using namespace std;
 
+void InvocationParams::setDefaults()
+{
+    timeLimit = INFINITE_LIMIT_INT64;
+    memoryLimit = INFINITE_LIMIT_INT64;
+    redirectInput = "";
+    redirectOutput = "";
+    redirectError = "";
+    homeDirectory = "";
+    commandLine = "";
+    bool trustedProcess = false;
+    userName = "";
+    domain = "";
+    password = "";
+}
+
 InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
 {
-    trustedProcess = false;
+    setDefaults();
 
     size_t tokensCount = cmdLineParams.size();
 
@@ -24,7 +39,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
                 error("expected time limit value after \"-t\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
-            timeLimit = parseTimeLimit(currentToken) * 10000LL;
+            timeLimit = parseTimeLimit(currentToken);
 
             continue;
         }
@@ -53,30 +68,41 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
 
         if (currentToken == "-l")
         {
-            error("not implemented option \"-l\"");
-            /*
             if (currentTokenNumber == tokensCount - 1)
-            error("expected login name after \"-l\"");
+                error("expected login name after \"-l\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
-            invocationParams.setUserLogin(currentToken);
 
+            size_t slashIdx = currentToken.find("/");
+            if (slashIdx != string::npos)
+            {
+                userName = currentToken.substr(0, slashIdx);
+                domain = currentToken.substr(slashIdx + 1);
+            }
+            else
+            {
+                slashIdx = currentToken.find("\\");
+                if (slashIdx != string::npos)
+                {
+                    userName = currentToken.substr(0, slashIdx);
+                    domain = currentToken.substr(slashIdx + 1);
+                }
+                else
+                    userName = currentToken;
+            }
+            
             continue;
-            */
         }
 
         if (currentToken == "-p")
         {
-            error("not implemented option \"-p\"");
-            /*
             if (currentTokenNumber == tokensCount - 1)
-            error("expected password after \"-p\"");
+                error("expected password after \"-p\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
-            invocationParams.setUserPassword(currentToken);
+            password = currentToken;
 
             continue;
-            */
         }
 
         if (currentToken == "-i")
@@ -214,10 +240,6 @@ long long InvocationParams::parseTimeLimit(const string& _s)
 
     long long timeLimit;
 
-    // In seconds (suffix "s").
-    if (s.length() > 1 && s[s.length() - 1] == 's')
-        s = s.substr(0, s.length() - 1);
-
     // In milliseconds (suffix "ms").
     if (s.length() > 2 && s.find("ms") == s.length() - 2)
     {
@@ -226,9 +248,13 @@ long long InvocationParams::parseTimeLimit(const string& _s)
         if (timeLimit < 0 || timeLimit >= INFINITE_LIMIT / 1000)
             error("invalid time limit");
     }
-    else
-    // In seconds (no suffix).
+    else    
     {
+        // In seconds (suffix "s").
+        if (s.length() > 1 && s[s.length() - 1] == 's')
+            s = s.substr(0, s.length() - 1);
+
+        // In seconds (no suffix).
         timeLimit = Strings::parseInt64(s);
 
         if (timeLimit < 0 || timeLimit >= INFINITE_LIMIT)
@@ -314,4 +340,19 @@ string InvocationParams::getCommandLine() const
 bool InvocationParams::isTrustedProcess() const
 {
     return trustedProcess;
+}
+
+string InvocationParams::getUserName() const
+{
+    return userName;
+}
+
+string InvocationParams::getDomain() const
+{
+    return domain;
+}
+
+string InvocationParams::getPassword() const
+{
+    return password;
 }
