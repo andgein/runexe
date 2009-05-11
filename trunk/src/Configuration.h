@@ -6,7 +6,7 @@
 namespace runexe
 {
     const int RUN_EXIT_FAILURE = 2147483647;
-    const std::string version = "0.0 r5";
+    const std::string version = "0.0 r6";
     const std::string copyrightYears = "2009";
 
     const bool RETURN_EXIT_CODE = false;
@@ -17,19 +17,6 @@ namespace runexe
 
     class Configuration
     {
-    private:
-        Configuration();
-        Configuration(const Configuration& configuration);
-        Configuration& operator =(const Configuration& configuration);        
-
-        bool returnExitCode;
-        bool screenOutput;
-        bool xmlOutput;        
-        std::string statisticsFileName;
-        std::string xmlFileName;
-
-        void setDefaults();
-
     public:
         static Configuration& getConfiguration();
         ~Configuration();
@@ -48,6 +35,19 @@ namespace runexe
 
         std::string getXmlFileName() const;
         void setXmlFileName(const std::string& xmlFileName);
+
+    private:
+        Configuration();
+        Configuration(const Configuration& configuration);
+        Configuration& operator =(const Configuration& configuration);        
+
+        bool returnExitCode;
+        bool screenOutput;
+        bool xmlOutput;
+        std::string statisticsFileName;
+        std::string xmlFileName;
+
+        void setDefaults();
     };
 }
 
