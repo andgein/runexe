@@ -20,7 +20,8 @@ namespace runexe
     void quit(unsigned int exitCode = RUN_EXIT_FAILURE);
     void showInfo();
     void showHelp();
-    void error(const std::string& message);        
+    void crash(const std::string& comment);
+    void fail(const std::string& comment);
     void printInvocationResult(const InvocationParams& invocationParams,
         const InvocationResult& invocationResult);
     void printXmlInvocationResult(const InvocationResult& invocationResult,

@@ -68,16 +68,40 @@ void runexe::showHelp()
         << "  runexe -i input.txt -o output.txt -e error.txt a.exe" << endl;
 }
 
-void runexe::error(const string& message)
+void runexe::fail(const string& comment)
 {
-    cout << endl
-        << "RunExe for Windows NT, Version " << version << endl
-        << "Copyright(c) Saratov SU Codecenter Development Team, "
-        << copyrightYears << endl
-        << "Based on runlib by Paul P. Komkoff Jr." << endl
-        << "Written by Dmitry Levshunov" << endl << endl
-        << "Error: " << message << endl
-        << "Use \"runexe -h\" to get help information" << endl;
+    Configuration& configuration = Configuration::getConfiguration();
+
+    if (configuration.isScreenOutput())
+    {
+        cout << "Invocation failed" << endl
+            << "Comment: " << comment << endl << endl
+            << "Use \"runexe -h\" to get help information" << endl;
+    }
+
+    InvocationResult invocationResult = InvocationResult(FAIL, comment);
+
+    if (configuration.isXmlOutput())
+        printXmlInvocationResult(invocationResult, configuration.getXmlFileName());
+
+    quit();
+}
+
+void runexe::crash(const string& comment)
+{
+    Configuration& configuration = Configuration::getConfiguration();
+
+    if (configuration.isScreenOutput())
+    {
+        cout << "Invocation crashed" << endl
+            << "Comment: " << comment << endl << endl
+            << "Use \"runexe -h\" to get help information" << endl;
+    }
+
+    InvocationResult invocationResult = InvocationResult(CRASH, comment);
+
+    if (configuration.isXmlOutput())
+        printXmlInvocationResult(invocationResult, configuration.getXmlFileName());
 
     quit();
 }
@@ -135,13 +159,11 @@ void runexe::printInvocationResult(const InvocationParams& invocationParams,
         break;
 
     case FAIL :
-        //////////////////////////////////////////////////////////////////////////
-        cout << "FAIL" << endl;
+        fail(invocationResult.getComment());
         break;
 
     case CRASH :
-        //////////////////////////////////////////////////////////////////////////
-        cout << "CRASH" << endl;
+        crash(invocationResult.getComment());
         break;
 
     case TIME_LIMIT_EXCEEDED :
@@ -177,13 +199,20 @@ void runexe::printInvocationResult(const InvocationParams& invocationParams,
         break;
 
     default :
-        error("unknown invocation verdict");
+        fail("unknown invocation verdict");
     }
 }
 
 void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
                                       const string& fileName)
 {
+    static bool firstCall = true;
+
+    if (!firstCall)
+        return;
+    else
+        firstCall = false;
+
     vector<string> result;
     result.push_back("<?xml version = \"1.1\" encoding = \"UTF-8\"?>");
     result.push_back("");
@@ -224,7 +253,7 @@ void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
         }
         else
         {
-            error("can't open file '" + fileName + "'");
+            fail("can't open file '" + fileName + "'");
         }
     }
     else

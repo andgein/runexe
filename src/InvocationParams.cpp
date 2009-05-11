@@ -37,7 +37,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-t")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected time limit value after \"-t\"");
+                crash("expected time limit value after \"-t\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             timeLimit = parseTimeLimit(currentToken);
@@ -48,7 +48,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-m")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected memory limit value after \"-m\"");
+                crash("expected memory limit value after \"-m\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             memoryLimit = parseMemoryLimit(currentToken);            
@@ -59,7 +59,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-d")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected directory after \"-d\"");
+                crash("expected directory after \"-d\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             homeDirectory = currentToken;
@@ -70,7 +70,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-l")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected login name after \"-l\"");
+                crash("expected login name after \"-l\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
 
@@ -98,7 +98,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-p")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected password after \"-p\"");
+                crash("expected password after \"-p\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             password = currentToken;
@@ -109,7 +109,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-i")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected file name after \"-i\"");
+                crash("expected file name after \"-i\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             redirectInput = currentToken;
@@ -120,7 +120,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-o")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected file name after \"-o\"");
+                crash("expected file name after \"-o\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             redirectOutput = currentToken;
@@ -131,7 +131,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-e")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected file name after \"-e\"");
+                crash("expected file name after \"-e\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             redirectError = currentToken;
@@ -163,10 +163,10 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
 
         if (currentToken == "-s")
         {
-            error("not implemented option \"-s\"");
+            fail("not implemented option \"-s\"");
             /*
             if (currentTokenNumber == tokensCount - 1)
-            error("expected file name after \"-s\"");
+            crash("expected file name after \"-s\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             configuration.setStatisticsFileName(currentToken);
@@ -177,10 +177,10 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
 
         if (currentToken == "-D")
         {
-            error("not implemented option \"-D\"");
+            fail("not implemented option \"-D\"");
             /*
             if (currentTokenNumber == tokensCount - 1)
-            error("expected var=value after \"-s\"");
+            crash("expected var=value after \"-s\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             ////////////////////////////////////////////
@@ -200,7 +200,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         if (currentToken == "-xmltof" || currentToken == "--xml-to-file")
         {
             if (currentTokenNumber == tokensCount - 1)
-                error("expected file name after \"--xml-to-file\"");
+                crash("expected file name after \"--xml-to-file\"");
 
             currentToken = cmdLineParams[++currentTokenNumber];
             configuration.setXmlOutput(true);
@@ -221,7 +221,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
         return;
     }
 
-    error("unexpected end of parameters");
+    crash("unexpected end of parameters");
 }
 
 string InvocationParams::buildCommandLine(const vector<string>& params, size_t fromIndex)
@@ -254,7 +254,7 @@ long long InvocationParams::parseTimeLimit(const string& _s)
         timeLimit = Strings::parseInt64(s.substr(0, s.length() - 2));
 
         if (timeLimit < 0 || timeLimit >= INFINITE_LIMIT / 1000)
-            error("invalid time limit");
+            crash("invalid time limit");
     }
     else    
     {
@@ -266,7 +266,7 @@ long long InvocationParams::parseTimeLimit(const string& _s)
         timeLimit = Strings::parseInt64(s);
 
         if (timeLimit < 0 || timeLimit >= INFINITE_LIMIT)
-            error("invalid time limit");
+            crash("invalid time limit");
 
         timeLimit *= 1000;
     }
@@ -284,7 +284,7 @@ long long InvocationParams::parseMemoryLimit(const string& s)
         memoryLimit = Strings::parseInt64(s.substr(0, s.length() - 1));
 
         if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64 / 1024)
-            error("invalid memory limit");
+            crash("invalid memory limit");
 
         memoryLimit *= 1024;
     }
@@ -294,7 +294,7 @@ long long InvocationParams::parseMemoryLimit(const string& s)
         memoryLimit = Strings::parseInt64(s.substr(0, s.length() - 1));
 
         if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64 / 1024 / 1024)
-            error("invalid memory limit");
+            crash("invalid memory limit");
 
         memoryLimit *= 1024 * 1024;
     }
@@ -304,7 +304,7 @@ long long InvocationParams::parseMemoryLimit(const string& s)
         memoryLimit = Strings::parseInt64(s);
 
         if (memoryLimit < 0 || memoryLimit >= INFINITE_LIMIT_INT64)
-            error("invalid memory limit");
+            crash("invalid memory limit");
     }
 
     return memoryLimit;

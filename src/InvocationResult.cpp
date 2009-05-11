@@ -1,5 +1,7 @@
 #include "InvocationResult.h"
 #include "InvocationVerdict.h"
+#include "Configuration.h"
+#include "Run.h"
 
 extern "C"
 {
@@ -13,6 +15,8 @@ using namespace std;
 
 InvocationResult::InvocationResult(const SubprocessResult* const invocationResult)
 {
+    setDefaults();
+
     int flags = invocationResult->SuccessCode;
 
     if (0 == flags)
@@ -26,12 +30,29 @@ InvocationResult::InvocationResult(const SubprocessResult* const invocationResul
     else
         verdict = CRASH;
 
+    // TODO: comment
+    comment = "";
+
+    if (verdict == CRASH)
+        return;
+
     exitCode = invocationResult->ExitCode;
     time = (int)((invocationResult->ttKernel + invocationResult->ttUser) / 10000LL);
     passedTime = (int)(invocationResult->ttWall / 10000LL);
-    memory = invocationResult->PeakMemory;
-    // TODO: comment
-    comment = "";
+    memory = invocationResult->PeakMemory;    
+}
+
+InvocationResult::InvocationResult(const InvocationVerdict& invocationVerdict,
+                                   const string& comment)
+{
+    if (invocationVerdict != CRASH && invocationVerdict != FAIL)
+        fail("Crash/Fail InvocationResult constructor invoked for verdict " +
+                invocationVerdictToString(invocationVerdict));
+
+    setDefaults();
+
+    verdict = invocationVerdict;
+    this->comment = comment;
 }
 
 InvocationVerdict InvocationResult::getInvocationVerdict() const
@@ -62,4 +83,14 @@ string InvocationResult::getComment() const
 int InvocationResult::getPassedTime() const
 {
     return passedTime;
+}
+
+void InvocationResult::setDefaults()
+{
+    verdict = FAIL;
+    exitCode = RUN_EXIT_FAILURE;
+    time = 0;
+    memory = 0;
+    passedTime = 0;
+    comment = "";
 }
