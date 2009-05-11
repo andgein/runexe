@@ -53,10 +53,12 @@ void runexe::showHelp()
         << "  -D var=value     - sets value of the environment variable, current environment" << endl
         << "                     is completely ignored in this case" << endl
         << "  -z               - run process in trusted mode" << endl
-        << "  -xml, --xml      - form xml document with invocation result information" << endl
+        << "  --no-idleness-check" << endl
+        << "                   - switch off idleness checking" << endl
+        << "  --xml, -xml      - form xml document with invocation result information" << endl
         << "                     and display them instead of standard output view" << endl
         << "                     (other output and key \"-q\" ignored)" << endl
-        << "  -xmltof <file>, --xml-to-file <file>" << endl
+        << "  --xml-to-file <file>, -xmltof <file>" << endl
         << "                   - same as \"-xml\" but print xml result into the file <file>" << endl
         << "                     and display usual information form" << endl
         << "Examples:" << endl

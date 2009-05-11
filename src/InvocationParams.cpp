@@ -15,10 +15,11 @@ void InvocationParams::setDefaults()
     redirectError = "";
     homeDirectory = "";
     commandLine = "";
-    bool trustedProcess = false;
     userName = "";
     domain = "";
     password = "";
+    trustedProcess = false;
+    idlenessChecking = true;
 }
 
 InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
@@ -208,6 +209,13 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
+        if (currentToken == "--no-idleness-check")
+        {
+            idlenessChecking = false;
+
+            continue;
+        }
+
         commandLine = buildCommandLine(cmdLineParams, currentTokenNumber);
 
         return;
@@ -355,4 +363,9 @@ string InvocationParams::getDomain() const
 string InvocationParams::getPassword() const
 {
     return password;
+}
+
+bool InvocationParams::isIdlenessChecking() const
+{
+    return idlenessChecking;
 }
