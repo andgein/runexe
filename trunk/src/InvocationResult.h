@@ -16,6 +16,8 @@ namespace runexe
     {
     public:
         InvocationResult(const SubprocessResult* const invocationResult);
+        InvocationResult(const InvocationVerdict& invocationVerdict,
+                const std::string& comment);
 
         InvocationVerdict getInvocationVerdict() const;
         int getExitCode() const;
@@ -24,13 +26,15 @@ namespace runexe
         int getPassedTime() const;
         std::string getComment() const;
 
-    private:
+    private:        
         InvocationVerdict verdict;
         int exitCode;
         int time;
         long long memory;
         int passedTime;
         std::string comment;
+
+        void setDefaults();
     };
 }
 

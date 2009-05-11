@@ -86,7 +86,7 @@ int Strings::parseInt(const string& s)
     int result = atoi(s.c_str());
 
     if (!checkIntegerIdentialToString(s, result))
-        error("expected int but received '" + s + "'");
+        crash("expected int but received '" + s + "'");
 
     return result;
 }
@@ -96,7 +96,7 @@ double Strings::parseDouble(const string& s)
     double result = atof(s.c_str());
 
     if (!checkDoubleIdentialToString(s, result))
-        error("expected double but received '" + s + "'");
+        crash("expected double but received '" + s + "'");
 
     return result;
 }
@@ -106,7 +106,7 @@ long long Strings::parseInt64(const string& s)
     long long result = _atoi64(s.c_str());
 
     if (!checkIntegerIdentialToString(s, result))
-        error("expected int64 but received '" + s + "'");
+        crash("expected int64 but received '" + s + "'");
 
     return result;
 }
