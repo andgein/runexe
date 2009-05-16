@@ -103,7 +103,10 @@ void runexe::crash(const string& comment)
     if (configuration.isXmlOutput())
         printXmlInvocationResult(invocationResult, configuration.getXmlFileName());
 
-    quit();
+	if (configuration.isReturnExitCode())
+		quit();
+	else
+		quit(0);
 }
 
 InvocationParams runexe::processParams(const vector<string>& params)
