@@ -6,7 +6,7 @@
 namespace runexe
 {
     const int RUN_EXIT_FAILURE = 2147483647;
-    const std::string version = "0.0.7";
+    const std::string version = "0.0.8";
     const std::string copyrightYears = "2009";
 
     const bool RETURN_EXIT_CODE = false;
