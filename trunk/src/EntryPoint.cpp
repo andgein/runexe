@@ -3,7 +3,7 @@
 #include "InvocationResult.h"
 #include "Strings.h"
 
-#include "runlib/w32invoke.h"
+#include "w32invoke.h"
 
 #include <string>
 #include <cstdlib>
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 
     long long timeLimit = invocationParams.getTimeLimit();
     if (timeLimit != InvocationParams::INFINITE_LIMIT_INT64)
-        if (0 == Subprocess_SetInt(process, RUNLIB_TIME_LIMIT, timeLimit * 10000LL))
+        if (0 == Subprocess_SetInt(process, RUNLIB_TIME_LIMIT, timeLimit * 1000LL))
             fail("can't set time limit to " + Strings::integerToString(timeLimit));
 
     long long memoryLimit = invocationParams.getMemoryLimit();
