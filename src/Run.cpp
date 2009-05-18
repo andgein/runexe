@@ -109,6 +109,100 @@ void runexe::crash(const string& comment)
 		quit(0);
 }
 
+void runexe::crash(const string& comment, Subprocess* const process)
+{
+    string fullComment = comment;
+
+    bool isFail = false;
+
+    while (0 != Subprocess_HasError(process))
+    {
+        const SubprocessErrorEntry errorEntry = Subprocess_PopError(process);
+
+        string errorDescription;
+
+        switch (errorEntry.error_id)
+        {
+        case EID_CREATE_PROCESS_AS_USER:
+            errorDescription = "can't create process as user";
+            // TODO: Fail or not?
+            break;
+
+        case EID_LOAD_USER_PROFILE:
+            errorDescription = "can't load user profile";
+            isFail = true;
+            break;
+
+        case EID_CREATE_DESKTOP:
+            errorDescription = "can't create desktop";
+            isFail = true;
+            break;
+
+        case EID_CREATE_WINDOW_STATION:
+            errorDescription = "can't create window station";
+            isFail = true;
+            break;
+
+        case EID_LOGON_USER:
+            errorDescription = "can't logon user";
+            // TODO: Fail or not?
+            break;
+
+        case EID_SET_EXTENDED_LIMIT_INFO:
+            errorDescription = "can't set extended limit info";
+            isFail = true;
+            break;
+
+        case EID_SET_UI_RESTRICTIONS:
+            errorDescription = "can't set UI restrictions";
+            isFail = true;
+            break;
+
+        case EID_GET_PROCESS_TIMES:
+            errorDescription = "can't get process times";
+            isFail = true;
+            break;
+
+        case EID_SYSTEM_TIME_TO_FILE_TIME:
+            errorDescription = "can't convert system time to file time";
+            isFail = true;
+            break;
+
+        case EID_QUERY_JOB_OBJECT:
+            errorDescription = "can't query job object";
+            isFail = true;
+            break;
+
+        case EID_LAUNCH_PROCESS:
+            errorDescription = "can't launch process";
+            // TODO: Fail or not?
+            break;
+
+        case EID_ASSIGN_TO_JOB:
+            errorDescription = "can't assign to job";
+            isFail = true;
+            break;
+
+        case EID_CREATE_JOB:
+            errorDescription = "can't create job";
+            isFail = true;
+            break;
+
+        default:
+            errorDescription = "unknown error";
+            isFail = true;
+        }
+
+        fullComment += "\n" + Strings::format("Error: '%s', last error code: %d.",
+                errorDescription.c_str(), errorEntry.dwLastError);
+    }
+
+    if (isFail)
+        fail(fullComment);
+    else
+        crash(fullComment);
+}
+
 InvocationParams runexe::processParams(const vector<string>& params)
 {
     if (params.size() > 1 && params[1] == "-h")

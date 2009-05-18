@@ -3,10 +3,7 @@
 
 #include "InvocationVerdict.h"
 
-extern "C"
-{
-#include "runlib/w32invoke.h"
-}
+#include "w32invoke.h"
 
 #include <string>
 
