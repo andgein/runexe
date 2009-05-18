@@ -34,8 +34,8 @@ InvocationResult::InvocationResult(const SubprocessResult* const invocationResul
         return;
 
     exitCode = invocationResult->ExitCode;
-    time = (int)((invocationResult->ttKernel + invocationResult->ttUser) / 10000LL);
-    passedTime = (int)(invocationResult->ttWall / 10000LL);
+    time = (int)((invocationResult->ttKernel + invocationResult->ttUser) / 1000LL);
+    passedTime = (int)(invocationResult->ttWall / 1000LL);
     memory = invocationResult->PeakMemory;    
 }
 
