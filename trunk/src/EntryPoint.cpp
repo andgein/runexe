@@ -1,12 +1,9 @@
-extern "C"
-{
-#include "runlib/w32invoke.h"
-}
-
 #include "Run.h"
 #include "Configuration.h"
 #include "InvocationResult.h"
 #include "Strings.h"
+
+#include "runlib/w32invoke.h"
 
 #include <string>
 #include <cstdlib>
@@ -74,7 +71,7 @@ int main(int argc, char* argv[])
             fail("can't set password to '" + password + "'");
 
     if (0 == Subprocess_Start(process))
-        crash("can't execute '" + invocationParams.getCommandLine() + "'");
+        crash("can't execute '" + invocationParams.getCommandLine() + "'", process);
 
     if (0 == Subprocess_Wait(process))
         fail("can't wait for process");

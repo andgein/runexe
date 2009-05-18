@@ -3,10 +3,7 @@
 #include "Configuration.h"
 #include "Run.h"
 
-extern "C"
-{
-#include "runlib/w32invoke.h"
-}
+#include "w32invoke.h"
 
 #include <string>
 
@@ -21,7 +18,7 @@ InvocationResult::InvocationResult(const SubprocessResult* const invocationResul
 
     if (0 == flags)
         verdict = SUCCESS;
-    else if (0 != (flags & EF_INACTIVE) || 0 != (flags & EF_TIME_LIMIT_10X))
+    else if (0 != (flags & EF_INACTIVE) || 0 != (flags & EF_TIME_LIMIT_HARD))
         verdict = IDLENESS_LIMIT_EXCEEDED;
     else if (0 != (flags & EF_TIME_LIMIT_HIT) || 0 != (flags & EF_TIME_LIMIT_HIT_POST))
         verdict = TIME_LIMIT_EXCEEDED;

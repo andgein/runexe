@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="runlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -60,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib"
+				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib Userenv.lib libgcc.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="runlib"
 				GenerateDebugInformation="true"
@@ -117,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="runlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -135,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib"
+				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib Userenv.lib libgcc.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="runlib"
 				GenerateDebugInformation="true"
@@ -205,6 +207,22 @@
 			<File
 				RelativePath=".\Strings.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories="runlib"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories="runlib"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
