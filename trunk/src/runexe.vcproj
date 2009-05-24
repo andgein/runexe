@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib Userenv.lib libgcc.lib"
+				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib Userenv.lib User32.lib libgcc.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="runlib"
 				GenerateDebugInformation="true"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib Userenv.lib libgcc.lib"
+				AdditionalDependencies="runlib32-static.lib Psapi.lib Advapi32.lib Userenv.lib User32.lib libgcc.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="runlib"
 				GenerateDebugInformation="true"

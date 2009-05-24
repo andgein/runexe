@@ -17,18 +17,35 @@ InvocationResult::InvocationResult(const SubprocessResult* const invocationResul
     int flags = invocationResult->SuccessCode;
 
     if (0 == flags)
+    {
         verdict = SUCCESS;
+        comment = "success";
+    }
+    else if (0 != (flags & EF_PROCESS_LIMIT_HIT) || 0 != (flags & EF_PROCESS_LIMIT_HIT_POST))
+    {
+        verdict = SECURITY_VIOLATION;
+        comment = "process limit violated";
+    }
     else if (0 != (flags & EF_INACTIVE) || 0 != (flags & EF_TIME_LIMIT_HARD))
+    {
         verdict = IDLENESS_LIMIT_EXCEEDED;
+        comment = "idleness limit exceeded";
+    }
     else if (0 != (flags & EF_TIME_LIMIT_HIT) || 0 != (flags & EF_TIME_LIMIT_HIT_POST))
+    {
         verdict = TIME_LIMIT_EXCEEDED;
+        comment = "time limit exceeded";
+    }
     else if (0 != (flags & EF_MEMORY_LIMIT_HIT) || 0 != (flags & EF_MEMORY_LIMIT_HIT_POST))
+    {
         verdict = MEMORY_LIMIT_EXCEEDED;
+        comment = "memory limit exceeded";
+    }
     else
+    {
         verdict = CRASH;
-
-    // TODO: comment
-    comment = "";
+        comment = "invocation crashed";
+    }
 
     if (verdict == CRASH)
         return;

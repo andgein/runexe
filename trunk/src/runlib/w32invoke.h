@@ -68,7 +68,7 @@ struct SubprocessResult {
   int ExitCode;
   uint64_t ttUser, ttKernel, ttWall;
   uint64_t PeakMemory;
-  int TotalProcesses;
+  uint64_t TotalProcesses;
 };
 
 struct SubprocessPipeBuffer {
@@ -91,9 +91,9 @@ typedef void (*SubprocessCbFunc)(const struct Subprocess * const, void * const);
 #endif
 
 EXPORTED struct Subprocess * Subprocess_CreateEx(
-	void* (*mallocfunc)(size_t),
-	void* (*reallocfunc)(void*, size_t),
-	void (*freefunc)(void*));
+    void* (*mallocfunc)(size_t),
+    void* (*reallocfunc)(void*, size_t),
+    void (*freefunc)(void*));
 EXPORTED struct Subprocess * Subprocess_Create();
 EXPORTED void Subprocess_Destroy(struct Subprocess * self);
 EXPORTED int Subprocess_Start(struct Subprocess * const self);

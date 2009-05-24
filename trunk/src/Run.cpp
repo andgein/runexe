@@ -103,10 +103,10 @@ void runexe::crash(const string& comment)
     if (configuration.isXmlOutput())
         printXmlInvocationResult(invocationResult, configuration.getXmlFileName());
 
-	if (configuration.isReturnExitCode())
-		quit();
-	else
-		quit(0);
+    if (configuration.isReturnExitCode())
+        quit();
+    else
+        quit(0);
 }
 
 void runexe::crash(const string& comment, Subprocess* const process)
@@ -125,7 +125,7 @@ void runexe::crash(const string& comment, Subprocess* const process)
         {
         case EID_CREATE_PROCESS_AS_USER:
             errorDescription = "can't create process as user";
-            // TODO: Fail or not?
+            isFail = true;
             break;
 
         case EID_LOAD_USER_PROFILE:
@@ -145,7 +145,7 @@ void runexe::crash(const string& comment, Subprocess* const process)
 
         case EID_LOGON_USER:
             errorDescription = "can't logon user";
-            // TODO: Fail or not?
+            isFail = true;
             break;
 
         case EID_SET_EXTENDED_LIMIT_INFO:
@@ -175,7 +175,7 @@ void runexe::crash(const string& comment, Subprocess* const process)
 
         case EID_LAUNCH_PROCESS:
             errorDescription = "can't launch process";
-            // TODO: Fail or not?
+            isFail = true;
             break;
 
         case EID_ASSIGN_TO_JOB:
