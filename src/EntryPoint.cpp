@@ -70,6 +70,16 @@ int main(int argc, char* argv[])
         if (0 == Subprocess_SetStringA(process, RUNLIB_PASSWORD, password.c_str()))
             fail("can't set password to '" + password + "'");
 
+    bool isTrusted = invocationParams.isTrustedProcess();
+
+    if (!isTrusted)
+        if (0 == Subprocess_SetInt(process, RUNLIB_PROCESS_LIMIT, 1))
+            fail("can't set process limit");
+
+    if (!isTrusted)
+        if (0 == Subprocess_SetBool(process, RUNLIB_RESTRICT_UI, 1))
+            fail("can't restrict some UI functions");
+
     if (0 == Subprocess_Start(process))
         crash("can't execute '" + invocationParams.getCommandLine() + "'", process);
 
