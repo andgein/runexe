@@ -8,7 +8,7 @@
 #define unlikely(x)     __builtin_expect((x),0)
 #define USED __attribute__((used))
 #else
-#include "msstdint.h"
+#include <msstdint.h>
 #define __const__
 #define __pure__
 #define likely(x) (x)

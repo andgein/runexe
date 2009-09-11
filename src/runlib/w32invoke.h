@@ -1,7 +1,7 @@
 #ifndef __W32INVOKE__
 #define __W32INVOKE__
 
-#include "win32-gcc.h"
+#include <win32-gcc.h>
 
 struct Subprocess;
 
@@ -19,7 +19,8 @@ enum SUBPROCESS_PARAM {
   RUNLIB_PROCESS_LIMIT,
   RUNLIB_CHECK_IDLENESS,
   RUNLIB_RESTRICT_UI,
-  RUNLIB_NO_JOB
+  RUNLIB_NO_JOB,
+  RUNLIB_MEMORY_LIMIT_HARD,
 };
 
 enum SubprocessErrorID {
@@ -91,12 +92,15 @@ typedef void (*SubprocessCbFunc)(const struct Subprocess * const, void * const);
 #endif
 
 EXPORTED struct Subprocess * Subprocess_CreateEx(
-    void* (*mallocfunc)(size_t),
-    void* (*reallocfunc)(void*, size_t),
-    void (*freefunc)(void*));
+	void* (*mallocfunc)(size_t),
+	void* (*reallocfunc)(void*, size_t),
+	void (*freefunc)(void*));
 EXPORTED struct Subprocess * Subprocess_Create();
 EXPORTED void Subprocess_Destroy(struct Subprocess * self);
 EXPORTED int Subprocess_Start(struct Subprocess * const self);
+
+EXPORTED int Subprocess_Launch(struct Subprocess * const self);
+EXPORTED int Subprocess_StartEx(struct Subprocess * const self);
 
 EXPORTED int Subprocess_SetStringW(
     struct Subprocess * const self, const enum SUBPROCESS_PARAM param, const wchar_t * const wValue);
