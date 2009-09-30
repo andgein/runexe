@@ -209,6 +209,13 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
             continue;
         }
 
+        if (currentToken == "--show-kernel-mode-time")
+        {
+            configuration.setShowKernelModeTime(true);
+
+            continue;
+        }
+
         if (currentToken == "--no-idleness-check")
         {
             idlenessChecking = false;

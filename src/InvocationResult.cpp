@@ -51,9 +51,10 @@ InvocationResult::InvocationResult(const SubprocessResult* const invocationResul
         return;
 
     exitCode = invocationResult->ExitCode;
-    time = (int)((invocationResult->ttKernel + invocationResult->ttUser) / 1000LL);
+    userTime = (int)((invocationResult->ttUser) / 1000LL);
+    kernelTime = (int)((invocationResult->ttKernel) / 1000LL);
     passedTime = (int)(invocationResult->ttWall / 1000LL);
-    memory = invocationResult->PeakMemory;    
+    memory = invocationResult->PeakMemory;
 }
 
 InvocationResult::InvocationResult(const InvocationVerdict& invocationVerdict,
@@ -79,9 +80,14 @@ int InvocationResult::getExitCode() const
     return exitCode;
 }
 
-int InvocationResult::getTime() const
+int InvocationResult::getUserTime() const
 {
-    return time;
+    return userTime;    
+}
+
+int InvocationResult::getKernelTime() const
+{
+    return kernelTime;
 }
 
 long long InvocationResult::getMemory() const
@@ -103,7 +109,8 @@ void InvocationResult::setDefaults()
 {
     verdict = FAIL;
     exitCode = RUN_EXIT_FAILURE;
-    time = 0;
+    userTime = 0;
+    kernelTime = 0;
     memory = 0;
     passedTime = 0;
     comment = "";

@@ -19,6 +19,8 @@ namespace runexe
     void showHelp();
     void crash(const std::string& comment);
     void crash(const std::string& comment, Subprocess* const process);
+    void printTimes(double userTime, double kernelTime, double timeLimit = 0.0,
+        bool isTimeLimitExceeded = false);
     void fail(const std::string& comment);
     void printInvocationResult(const InvocationParams& invocationParams,
         const InvocationResult& invocationResult);
