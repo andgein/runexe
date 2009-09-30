@@ -18,7 +18,8 @@ namespace runexe
 
         InvocationVerdict getInvocationVerdict() const;
         int getExitCode() const;
-        int getTime() const;
+        int getUserTime() const;
+        int getKernelTime() const;
         long long getMemory() const;
         int getPassedTime() const;
         std::string getComment() const;
@@ -26,7 +27,8 @@ namespace runexe
     private:        
         InvocationVerdict verdict;
         int exitCode;
-        int time;
+        int userTime;
+        int kernelTime;
         long long memory;
         int passedTime;
         std::string comment;

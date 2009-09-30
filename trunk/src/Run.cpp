@@ -53,6 +53,9 @@ void runexe::showHelp()
         << "  -D var=value     - sets value of the environment variable, current environment" << endl
         << "                     is completely ignored in this case" << endl
         << "  -z               - run process in trusted mode" << endl
+        << "  --show-kernel-mode-time" << endl
+        << "                   - show user-mode and kernel-mode time" << endl
+        << "                     (shows only user-mode time without this option)" << endl
         << "  --no-idleness-check" << endl
         << "                   - switch off idleness checking" << endl
         << "  --xml, -xml      - form xml document with invocation result information" << endl
@@ -229,13 +232,37 @@ InvocationParams runexe::processCommandLine(int argc, char* argv[])
     return processParams(params);
 }
 
+void runexe::printTimes(double userTime, double kernelTime,
+                        double timeLimit, bool isTimeLimitExceeded)
+{
+    if (Configuration::getConfiguration().isShowKernelModeTime())
+    {
+        if (isTimeLimitExceeded)
+            cout << "  time consumed:" << endl
+                 << "    user mode:   " << userTime << " of " << timeLimit << " sec" << endl
+                 << "    kernel mode: " << kernelTime << " sec" << endl;
+        else
+            cout << "  time consumed:" << endl
+                 << "    user mode:   " << userTime << " sec" << endl
+                 << "    kernel mode: " << kernelTime << " sec" << endl;
+    }
+    else
+    {
+        if (isTimeLimitExceeded)
+            cout << "  time consumed: " << userTime << " of " << timeLimit << " sec" << endl;
+        else
+            cout << "  time consumed: " << userTime << " sec" << endl;
+    }
+}
+
 void runexe::printInvocationResult(const InvocationParams& invocationParams,
                                    const InvocationResult& invocationResult)
 {
     InvocationVerdict invocationVerdict = invocationResult.getInvocationVerdict();
 
     int exitCode = invocationResult.getExitCode();
-    double time = (double)invocationResult.getTime() / 1000.0;
+    double userTime = (double)invocationResult.getUserTime() / 1000.0;
+    double kernelTime = (double)invocationResult.getKernelTime() / 1000.0;
     double passedTime = (double)invocationResult.getPassedTime() / 1000.0;
     long long memory = invocationResult.getMemory();
 
@@ -249,10 +276,10 @@ void runexe::printInvocationResult(const InvocationParams& invocationParams,
     {
     case SUCCESS :
         cout << "Program successfully terminated" << endl
-            << "  exit code:     " << exitCode << endl
-            << "  time consumed: " << time << " sec" << endl
-            << "  time passed:   " << passedTime << " sec" << endl
-            << "  peak memory:   " << memory << " bytes" << endl;
+             << "  exit code:     " << exitCode << endl,
+        printTimes(userTime, kernelTime),
+        cout << "  time passed:   " << passedTime << " sec" << endl
+             << "  peak memory:   " << memory << " bytes" << endl;
         break;
 
     case FAIL :
@@ -265,34 +292,34 @@ void runexe::printInvocationResult(const InvocationParams& invocationParams,
 
     case TIME_LIMIT_EXCEEDED :
         cout << "Time limit exceeded" << endl
-            << "Program failed to terminate within " << timeLimit << " sec" << endl
-            << "  time consumed: " << time << " of " << timeLimit << " sec" << endl
-            << "  time passed:   " << passedTime << " sec" << endl
-            << "  peak memory:   " << memory << " bytes" << endl;
+             << "Program failed to terminate within " << timeLimit << " sec" << endl,
+        printTimes(userTime, kernelTime, timeLimit, true),
+        cout << "  time passed:   " << passedTime << " sec" << endl
+             << "  peak memory:   " << memory << " bytes" << endl;
         break;
 
     case MEMORY_LIMIT_EXCEEDED :
         cout << "Memory limit exceeded" << endl
-            << "Program tried to allocate more than " << memoryLimit << " bytes" << endl
-            << "  time consumed: " << time << " sec" << endl
-            << "  time passed:   " << passedTime << " sec" << endl
-            << "  peak memory:   " << memory << " of " << memoryLimit << " bytes" << endl;
+             << "Program tried to allocate more than " << memoryLimit << " bytes" << endl,
+        printTimes(userTime, kernelTime),
+        cout << "  time passed:   " << passedTime << " sec" << endl
+             << "  peak memory:   " << memory << " of " << memoryLimit << " bytes" << endl;
         break;
 
     case IDLENESS_LIMIT_EXCEEDED :
         cout << "Idleness limit exceeded" << endl
-            << "Detected program idle " << endl
-            << "  time consumed: " << time << " sec" << endl
-            << "  time passed:   " << passedTime << " sec" << endl
-            << "  peak memory:   " << memory << " bytes" << endl;
+             << "Detected program idle " << endl,
+        printTimes(userTime, kernelTime),
+        cout << "  time passed:   " << passedTime << " sec" << endl
+             << "  peak memory:   " << memory << " bytes" << endl;
         break;
 
     case SECURITY_VIOLATION :
         cout << "Security violation" << endl
-            << "Program tried to do some forbidden action" << endl
-            << "  time consumed: " << time << " of " << timeLimit << " sec" << endl
-            << "  time passed:   " << passedTime << " sec" << endl
-            << "  peak memory:   " << memory << " bytes" << endl;
+             << "Program tried to do some forbidden action" << endl,
+        printTimes(userTime, kernelTime),
+        cout << "  time passed:   " << passedTime << " sec" << endl
+             << "  peak memory:   " << memory << " bytes" << endl;
         break;
 
     default :
@@ -320,9 +347,12 @@ void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
     result.push_back("    <exitCode>" +
             Strings::integerToString(invocationResult.getExitCode()) +
             "</exitCode>");
-    result.push_back("    <processorTime>" +
-            Strings::integerToString(invocationResult.getTime()) +
-            "</processorTime>");
+    result.push_back("    <processorUserModeTime>" +
+            Strings::integerToString(invocationResult.getUserTime()) +
+            "</processorUserModeTime>");
+    result.push_back("    <processorKernelModeTime>" +
+        Strings::integerToString(invocationResult.getKernelTime()) +
+        "</processorKernelModeTime>");
     result.push_back("    <passedTime>" +
             Strings::integerToString(invocationResult.getPassedTime()) +
             "</passedTime>");

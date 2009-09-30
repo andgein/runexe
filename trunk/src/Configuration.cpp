@@ -32,6 +32,7 @@ void Configuration::setDefaults()
     setReturnExitCode(RETURN_EXIT_CODE);
     setScreenOutput(SCREEN_OUTPUT);
     setXmlOutput(XML_OUTPUT);
+    setShowKernelModeTime(SHOW_KERNEL_MODE_TIME);
     setStatisticsFileName(STATISTICS_FILE_NAME);
     setXmlFileName(XML_FILE_NAME);
 }
@@ -64,6 +65,16 @@ bool Configuration::isXmlOutput() const
 void Configuration::setXmlOutput(bool xmlOutput)
 {
     this->xmlOutput = xmlOutput;
+}
+
+bool Configuration::isShowKernelModeTime() const
+{
+    return showKernelModeTime;
+}
+
+void Configuration::setShowKernelModeTime(bool showKernelModeTime)
+{
+    this->showKernelModeTime = showKernelModeTime;
 }
 
 string Configuration::getStatisticsFileName() const

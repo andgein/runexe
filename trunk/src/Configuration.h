@@ -6,12 +6,13 @@
 namespace runexe
 {
     const int RUN_EXIT_FAILURE = 2147483647;
-    const std::string version = "0.0.12";
+    const std::string version = "0.0.13";
     const std::string copyrightYears = "2009";
 
     const bool RETURN_EXIT_CODE = false;
     const bool SCREEN_OUTPUT = true;
     const bool XML_OUTPUT = false;
+    const bool SHOW_KERNEL_MODE_TIME = false;
     const std::string STATISTICS_FILE_NAME = "";
     const std::string XML_FILE_NAME = "";
 
@@ -30,6 +31,9 @@ namespace runexe
         bool isXmlOutput() const;
         void setXmlOutput(bool isXmlOutput);
 
+        bool isShowKernelModeTime() const;
+        void setShowKernelModeTime(bool showKernelModeTime);
+
         std::string getStatisticsFileName() const;
         void setStatisticsFileName(const std::string& statisticsFileName);
 
@@ -44,6 +48,7 @@ namespace runexe
         bool returnExitCode;
         bool screenOutput;
         bool xmlOutput;
+        bool showKernelModeTime;
         std::string statisticsFileName;
         std::string xmlFileName;
 
