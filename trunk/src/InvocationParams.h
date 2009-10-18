@@ -24,6 +24,7 @@ namespace runexe
         std::string getUserName() const;
         std::string getDomain() const;
         std::string getPassword() const;
+        std::string getInjectDll() const;
         bool isTrustedProcess() const;
         bool isIdlenessChecking() const;
 
@@ -38,6 +39,7 @@ namespace runexe
         std::string userName;
         std::string domain;
         std::string password;
+        std::string injectDll;
         bool trustedProcess;
         bool idlenessChecking;
 

@@ -70,6 +70,11 @@ int main(int argc, char* argv[])
         if (0 == Subprocess_SetStringA(process, RUNLIB_PASSWORD, password.c_str()))
             fail("can't set password to '" + password + "'");
 
+    string injectDll = invocationParams.getInjectDll();
+    if (!injectDll.empty())
+        if (0 == Subprocess_SetStringA(process, RUNLIB_INJECT_DLL, injectDll.c_str()))
+            fail("can't set injectDll to '" + injectDll + "'");
+
     bool isTrusted = invocationParams.isTrustedProcess();
 
     if (!isTrusted)

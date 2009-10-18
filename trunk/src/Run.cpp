@@ -44,6 +44,7 @@ void runexe::showHelp()
         << "  -d <directory>   - make <directory> home directory for process" << endl
         << "  -l <login-name>  - create process under <login-name>" << endl
         << "  -p <password>    - logins user using <password>" << endl
+        << "  -j <file>        - injects specified dll file into the process" << endl
         << "  -i <file>        - redirects standart input stream to the <file>" << endl
         << "  -o <file>        - redirects standart output stream to the <file>" << endl
         << "  -e <file>        - redirects standart error stream to the <file>" << endl
