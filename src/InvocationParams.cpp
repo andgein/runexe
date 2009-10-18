@@ -18,6 +18,7 @@ void InvocationParams::setDefaults()
     userName = "";
     domain = "";
     password = "";
+    injectDll = "";
     trustedProcess = false;
     idlenessChecking = true;
 }
@@ -102,6 +103,17 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
 
             currentToken = cmdLineParams[++currentTokenNumber];
             password = currentToken;
+
+            continue;
+        }
+
+        if (currentToken == "-j")
+        {
+            if (currentTokenNumber == tokensCount - 1)
+                crash("expected dll file name after \"-j\"");
+
+            currentToken = cmdLineParams[++currentTokenNumber];
+            injectDll = currentToken;
 
             continue;
         }
@@ -370,6 +382,11 @@ string InvocationParams::getDomain() const
 string InvocationParams::getPassword() const
 {
     return password;
+}
+
+string InvocationParams::getInjectDll() const
+{
+    return injectDll;
 }
 
 bool InvocationParams::isIdlenessChecking() const
