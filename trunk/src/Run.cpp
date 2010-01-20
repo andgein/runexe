@@ -369,8 +369,7 @@ void runexe::printXmlInvocationResult(const InvocationResult& invocationResult,
     if (!fileName.empty())
     {
         
-        FILE* file;
-        fopen_s(&file, fileName.c_str(), "wt");
+        FILE* file = fopen(fileName.c_str(), "wt");
 
         if (NULL != file)
         {

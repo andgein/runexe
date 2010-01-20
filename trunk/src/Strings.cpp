@@ -103,7 +103,11 @@ double Strings::parseDouble(const string& s)
 
 long long Strings::parseInt64(const string& s)
 {
-    long long result = _atoi64(s.c_str());
+    stringstream ss;
+    ss << s;
+
+    long long result;
+    ss >> result;
 
     if (!checkIntegerIdentialToString(s, result))
         crash("expected int64 but received '" + s + "'");
