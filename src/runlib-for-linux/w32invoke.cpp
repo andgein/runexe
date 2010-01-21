@@ -17,14 +17,17 @@
 #include <sys/resource.h>
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
-#include <wait.h>
 #include <cstdlib>
 
 #include "w32invoke.h"
+
+// workaround for OSes, which don't respect UNIX03 in full
+extern char **environ;
 
 #define USED
 

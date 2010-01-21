@@ -1,5 +1,5 @@
-#ifndef _STRINGS_H_
-#define _STRINGS_H_
+#ifndef _RUNEXE_STRINGS_H_
+#define _RUNEXE_STRINGS_H_
 
 #include <string>
 #include <cstdarg>
