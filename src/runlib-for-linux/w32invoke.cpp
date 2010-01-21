@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <wait.h>
+#include <cstdlib>
 
 #include "w32invoke.h"
 
