@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstdlib>
+
 
 using namespace runexe;
 using namespace std;
