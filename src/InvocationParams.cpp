@@ -33,7 +33,7 @@ InvocationParams::InvocationParams(const vector<string>& cmdLineParams)
 
     for (size_t currentTokenNumber = 1; currentTokenNumber < tokensCount; ++currentTokenNumber)
     {
-        string currentToken = cmdLineParams[currentTokenNumber];        
+        string currentToken = cmdLineParams[currentTokenNumber];
 
         if (currentToken == "-t")
         {
@@ -254,6 +254,15 @@ string InvocationParams::buildCommandLine(const vector<string>& params, size_t f
 
         if (currentTokenNumber > fromIndex)
             result += " ";
+
+        for (size_t i = 0; i < currentToken.length(); i++)
+        {
+            if (currentToken[i] <= ' ')
+            {
+                currentToken = "\"" + currentToken + "\"";
+                break;
+            }
+        }
 
         result += currentToken;
     }
