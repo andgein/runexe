@@ -5,7 +5,8 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
-
+#include <cstdio>
+#include <iostream>
 
 using namespace runexe;
 using namespace std;
