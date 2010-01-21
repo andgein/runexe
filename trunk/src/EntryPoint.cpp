@@ -7,6 +7,7 @@
 
 #include <string>
 #include <cstdlib>
+#include <iostream>
 
 using namespace runexe;
 using namespace std;
@@ -17,13 +18,13 @@ int main(int argc, char* argv[])
 
     Subprocess* process = Subprocess_Create();
 
-    if (invocationParams.isIdlenessChecking())
-        if (0 == Subprocess_SetBool(process, RUNLIB_CHECK_IDLENESS, 1))
-            fail("can't set idleness checking");
-
     string commandLine = invocationParams.getCommandLine();
     if (0 == Subprocess_SetStringA(process, RUNLIB_COMMAND_LINE, commandLine.c_str()))
         fail("can't set process command line to '" + commandLine + "'");
+
+    if (invocationParams.isIdlenessChecking())
+        if (0 == Subprocess_SetBool(process, RUNLIB_CHECK_IDLENESS, 1))
+            fail("can't set idleness checking");
 
     long long timeLimit = invocationParams.getTimeLimit();
     if (timeLimit != InvocationParams::INFINITE_LIMIT_INT64)
@@ -90,9 +91,9 @@ int main(int argc, char* argv[])
 
     if (0 == Subprocess_Wait(process))
         fail("can't wait for process");
-
+    
     InvocationResult invocationResult = InvocationResult(Subprocess_GetResult(process));
-
+    
     Configuration& configuration = Configuration::getConfiguration();
 
     if (configuration.isScreenOutput())
