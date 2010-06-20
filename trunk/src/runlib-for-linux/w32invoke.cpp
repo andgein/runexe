@@ -238,13 +238,16 @@ int USED Subprocess_StartEx(struct Subprocess * const self) {
 static void Subprocess_LaunchChild(struct Subprocess * const self)
 {
     // Sets current directory
-    if (!self->currentDirectory.empty()) 
+    if (self->currentDirectory.empty()) 
     {
-        if (chdir(self->currentDirectory.c_str()))
-            fail("Unable to change current directory to \"%s\"", self->currentDirectory.c_str());
+        char* cwd = new char[500];
+        self->currentDirectory = (string)getcwd(cwd, 500);
+        delete[] cwd;
     }
-    
-    // Redirects standard file descriptors
+    if (chdir(self->currentDirectory.c_str()))
+        fail("Unable to change current directory to \"%s\"", self->currentDirectory.c_str());
+  
+    //Redirects standard file descriptors
     redirectFd(0, self->redirectFiles[0].c_str(), "rt");
     redirectFd(1, self->redirectFiles[1].c_str(), "wt");
     redirectFd(2, self->redirectFiles[2].c_str(), "wt");
@@ -263,10 +266,8 @@ static void Subprocess_LaunchChild(struct Subprocess * const self)
     char** envp = new char*[2];
     envp[0] = strdup((string("PATH=") + getenv("PATH")).c_str());
     envp[1] = NULL;
-    
     environ = envp; 
-    execvp(program, argv);
-    
+    execve(program, argv, envp);
     free(envp[0]);
     for (int i = 0; i < argc; i++)
         free(argv[i]);
@@ -277,13 +278,12 @@ static void Subprocess_LaunchChild(struct Subprocess * const self)
     exit(EXIT_FAILURE);
 }
 
-static void Subprocess_WaitForChild(struct Subprocess * const self)
+static void USED Subprocess_WaitForChild(struct Subprocess * const self)
 {
     while (self->subprocessResult.SuccessCode == 0) {
             int status;
             pid_t wres;
             struct rusage usage;
-
             wres = wait4(self->pid, &status, 0, &usage);
             if (wres == -1 && errno == EINTR) {
                 self->subprocessResult.SuccessCode = EF_KILLED;

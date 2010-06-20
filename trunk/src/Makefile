@@ -14,3 +14,4 @@ runexe: w32invoke
 
 clean:
 	rm -rf *.o
+	rm -rf runexe
