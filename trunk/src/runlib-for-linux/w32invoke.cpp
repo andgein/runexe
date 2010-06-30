@@ -278,6 +278,58 @@ static void Subprocess_LaunchChild(struct Subprocess * const self)
     exit(EXIT_FAILURE);
 }
 
+int wall_time;
+
+timeval start_time;
+
+void update_from_proc(struct Subprocess * const self)
+{
+    char path[250];
+    unsigned long int utime, stime;
+    uint64_t cmem;
+    uint64_t& child_memory = self->subprocessResult.PeakMemory;
+    struct timeval tv;
+    FILE* f;
+    static int last_update = -100;
+    int child_pid = self->pid;
+    int MAGIC_CONSTANT = 1000;
+    uint64_t& child_time = self->subprocessResult.ttWall;
+
+    // Wall time is trivial.
+    gettimeofday(&tv, 0);
+    wall_time = (tv.tv_sec - start_time.tv_sec) * 1000 + (tv.tv_usec - start_time.tv_usec) / 1000;
+    int update = 100;
+    if (wall_time - last_update < update) {
+        return;
+    }
+    last_update = wall_time;
+
+    // Used time, from /proc/$pid/stat
+    sprintf(path, "/proc/%d/stat", child_pid);
+    if (!(f = fopen(path, "rt"))) {
+        perror("ERROR: failed to read from /proc");
+        exit(-1);
+    }
+    fscanf(f, "%*d %*s %*c %*d%*d%*d%*d%*d%*u%*u%*u%*u%*u%lu%lu", &utime, &stime);
+    child_time = (utime + stime) * MAGIC_CONSTANT;
+    fclose(f);
+
+    // Memory, from /proc/$pid/stat
+    sprintf(path, "/proc/%d/statm", child_pid);
+    if (!(f = fopen(path, "rt"))) {
+        perror("ERROR: failed to read from /proc");
+        exit(-1);
+    }
+    // I'm not completely sure this is the right field to use.
+    fscanf(f, "%*d%d%*d%*d%*d%*d", &cmem);
+    cmem = (cmem * getpagesize()) / 1024;
+    if (child_memory < cmem) {
+        child_memory = cmem;
+    }
+    fclose(f);
+}
+
+
 static void USED Subprocess_WaitForChild(struct Subprocess * const self)
 {
     while (self->subprocessResult.SuccessCode == 0) {
@@ -285,15 +337,18 @@ static void USED Subprocess_WaitForChild(struct Subprocess * const self)
             pid_t wres;
             struct rusage usage;
             wres = wait4(self->pid, &status, 0, &usage);
+            self->subprocessResult.ttUser = usage.ru_utime.tv_usec;
+            self->subprocessResult.ttKernel = usage.ru_stime.tv_usec;
+	    //            update_from_proc(self);
             if (wres == -1 && errno == EINTR) {
-                self->subprocessResult.SuccessCode = EF_KILLED;
+	        self->subprocessResult.SuccessCode = EF_KILLED;
                 self->subprocessResult.ExitCode = WEXITSTATUS(status);
                 return;
             } else if (wres == self->pid && WIFSTOPPED(status)) {
                 self->subprocessResult.SuccessCode = EF_KILLED;
                 self->subprocessResult.ExitCode = WEXITSTATUS(status);
                 return;
-            } else if (wres == self->pid && WIFEXITED(status)) {
+            } else if (wres == self->pid && WIFEXITED(status)) {	        
                 self->subprocessResult.SuccessCode = 0;
                 self->subprocessResult.ExitCode = WEXITSTATUS(status);
                 return;
@@ -306,6 +361,10 @@ static void USED Subprocess_WaitForChild(struct Subprocess * const self)
             }
         }
 }
+
+
+
+
 
 int USED Subprocess_Start(struct Subprocess * const self) {
     if (!(self->pid = fork())) {
