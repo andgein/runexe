@@ -116,9 +116,9 @@ void InvocationResult::setDefaults()
     comment = "";
 }
 
-void InvocationResult::setInvocationVerdict(const InvocationVerdict& invocationVerdict)
+void InvocationResult::setInvocationVerdict(const InvocationVerdict& verdict)
 {
-    this->invocationVerdict = invocationVerdict;
+    this->verdict = verdict;
 }
 
 void InvocationResult::setExitCode(int exitCode)
