@@ -115,3 +115,38 @@ void InvocationResult::setDefaults()
     passedTime = 0;
     comment = "";
 }
+
+void InvocationResult::setInvocationVerdict(const InvocationVerdict& invocationVerdict)
+{
+    this->invocationVerdict = invocationVerdict;
+}
+
+void InvocationResult::setExitCode(int exitCode)
+{
+    this->exitCode = exitCode;
+}
+
+void InvocationResult::setUserTime(int userTime)
+{
+    this->userTime = userTime;
+}
+
+void InvocationResult::setKernelTime(int kernelTime)
+{
+    this->kernelTime = kernelTime;
+}
+
+void InvocationResult::setMemory(long long memory)
+{
+    this->memory = memory;
+}
+
+void InvocationResult::setPassedTime(int passedTime)
+{
+    this->passedTime = passedTime;
+}
+
+void InvocationResult::setComment(std::string comment)
+{
+    this->comment = comment;
+}

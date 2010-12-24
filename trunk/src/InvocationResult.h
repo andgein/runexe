@@ -24,6 +24,14 @@ namespace runexe
         int getPassedTime() const;
         std::string getComment() const;
 
+        void setInvocationVerdict(const InvocationVerdict& invocationVerdict);
+        void setExitCode(int exitCode);
+        void setUserTime(int userTime);
+        void setKernelTime(int kernelTime);
+        void setMemory(long long memory);
+        void setPassedTime(int passedTime);
+        void setComment(std::string comment);
+
     private:        
         InvocationVerdict verdict;
         int exitCode;
