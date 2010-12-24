@@ -12,6 +12,7 @@ namespace runexe
     class InvocationResult
     {
     public:
+        InvocationResult();
         InvocationResult(const SubprocessResult* const invocationResult);
         InvocationResult(const InvocationVerdict& invocationVerdict,
                 const std::string& comment);

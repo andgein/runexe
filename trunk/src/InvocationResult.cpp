@@ -10,6 +10,11 @@
 using namespace runexe;
 using namespace std;
 
+InvocationResult::InvocationResult()
+{
+    setDefaults();
+}
+
 InvocationResult::InvocationResult(const SubprocessResult* const invocationResult)
 {
     setDefaults();
