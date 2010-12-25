@@ -36,9 +36,9 @@ struct process {
     vector<string> args;
     
     /* Memory limit in bytes. */
-    int memoryLimit;
+    long long  memoryLimit;
     /* Time limit in milliseconds. */
-    int timeLimit;
+    long long timeLimit;
     
     /* Redirection file for stdin, empty if not used. */
     string redirectStdinFile;
@@ -185,7 +185,10 @@ static void execute(process& p) {
     p.state = RUNNING;    
     execvp(commandLine, argv);
     
+    p.completed = true;
     p.state = FAILED;
+    p.exitCode = -1;
+    
     if (errno == ENOENT)
         p.comment = "No such file";
 
@@ -375,9 +378,10 @@ static process_outcome run(process& p) {
     p.comment = "Can't fork().";
     long long start = time_ms();
     
-    if (!(p.pid = fork()))
+    if (!(p.pid = fork())) {
         execute(p);
-    else {
+        exit(EXIT_FAILURE);
+    } else {
         if (p.pid > 0)
             waitFor(p);
         kill(p.pid, SIGKILL);
