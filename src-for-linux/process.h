@@ -24,6 +24,9 @@ struct process_outcome {
     /* Time consumed, in milliseconds. */
     long long time;
     
+    /** Time passed (not CPU). */
+    long long passed_time;
+    
     /* Absolute path to the file, containing stdout. */
     std::string output_file;
     
@@ -41,6 +44,7 @@ struct process_params {
     std::string output_file;
     std::string error_file;
     std::string directory;
+    bool check_idleness;
 };
 
 process_outcome run(const std::string& command_line,

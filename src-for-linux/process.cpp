@@ -7,6 +7,7 @@
 #include <cstdarg>
 #include <iostream>
 #include <vector>
+#include <signal.h>
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -61,12 +62,13 @@ struct process {
 
     /* Human-readable comment. */    
     string comment;
-    /* Random token for internal usage, unique. */
-    string randomToken;
-    /* Temporary directory.*/
-    string tmpDir;
+    
+    /* Check idleness? */
+    bool checkIdleness;
+    
+    /** Consecutive cycles with no CPU usage. */
+    int idleCount;
 };
-
 
 static vector<string> tokenizeCommandLine(const string& commandLine) {
     vector<string> result;
@@ -202,6 +204,7 @@ long long ptime(pid_t pid) {
         if (i >= 13)
             result += atoi(buf);
     }
+    fclose(f);
     return (int)(result * 1000.0 / tickspersec + 0.5);
 }
 
@@ -214,6 +217,7 @@ long long pmemory(pid_t pid) {
         sscanf(buf, "%s %s %s", key, value, units);
         if (strcmp(key, "VmPeak:") == 0) {
             int num = atoi(value);
+            fclose(f);
             if (strcmp(units, "kB") == 0) {
                 return num * 1024LL;
             } else {
@@ -221,11 +225,19 @@ long long pmemory(pid_t pid) {
             }
         }
     }
+    fclose(f);
     return 0;
 }
 
 static void update(process& p) {
-    p.consumedTime = max(p.consumedTime, ptime(p.pid));
+    long long time = ptime(p.pid);
+    
+    if (p.consumedTime == time)
+	p.idleCount++;
+    else
+	p.idleCount = 0;
+	
+    p.consumedTime = max(p.consumedTime, time);
     p.consumedMemory = max(p.consumedMemory, pmemory(p.pid));
 }
 
@@ -237,18 +249,54 @@ static void updateByRusage(process& p, struct rusage& usage) {
     p.consumedMemory = max(p.consumedMemory, usage.ru_maxrss * 1024LL);
 }
 
+static bool isIdle(const process& p, long long passedTimeMillis) {
+    return p.checkIdleness && (passedTimeMillis > 1000 && p.idleCount > 100
+	|| passedTimeMillis > 5000 && passedTimeMillis > 10 * p.timeLimit && p.timeLimit > 0);
+}
+
 static void waitFor(process& p) {
+    p.idleCount = 0;
+    long long startTimeMillis = time(NULL);
+    int iter = 0;
+
+    // Main loop.
     while (!p.completed) {
+	iter++;
         int status;
         pid_t wres;
         struct rusage usage;
         wres = wait4(p.pid, &status,
             WUNTRACED | WCONTINUED | WNOHANG, &usage);
             
+        // Is running?
         if (wres == 0) {
             update(p);
-            // Sleep for 50ms.
-            usleep(50000);
+            if (p.consumedTime > p.timeLimit && p.timeLimit > 0) {
+                p.completed = true;
+                p.exitCode = -1;
+                p.state = TIME_EXCEEDED;
+                p.comment = format("Process has been time limited [timeLimit=%lld ms]", p.timeLimit);
+                kill(p.pid, SIGKILL);
+                return;
+            }
+            if (p.consumedMemory > p.memoryLimit && p.memoryLimit > 0) {
+                p.completed = true;
+                p.exitCode = -1;
+                p.state = MEMORY_EXCEEDED;
+                p.comment = format("Process has been memory limited [memoryLimit=%lld kb]", p.timeLimit / 1024);
+                kill(p.pid, SIGKILL);
+                return;
+            }
+            long long passed = (time(NULL) - startTimeMillis) * 1000LL;
+            if (isIdle(p, passed)) {
+        	p.completed = true;
+        	p.exitCode = -1;
+        	p.state = IDLENESS_EXCEEDED;
+        	p.comment = "Process hangs or something like it";
+        	kill(p.pid, SIGKILL);
+        	return;
+            }
+            usleep(min(1000 * iter, 50000));
         } else {
             updateByRusage(p, usage);
             if (p.consumedTime > p.timeLimit && p.timeLimit > 0) {
@@ -277,7 +325,7 @@ static void waitFor(process& p) {
                 p.state = FAILED;
                 p.comment = "Process has been killed [WIFSTOPPED]";
                 return;
-            } else if (wres == p.pid && WIFEXITED(status)) {	        
+            } else if (wres == p.pid && WIFEXITED(status)) {
                 p.completed = true;
                 p.exitCode = WEXITSTATUS(status);
                 p.comment = "";
@@ -300,28 +348,39 @@ static void waitFor(process& p) {
     }
 }
 
-static process_outcome run(process& p) {
-    p.randomToken = randomToken();
-    char tmp[] = "/tmp/tmp_process_XXXXXX";
-    p.tmpDir = mkdtemp(tmp);
+static long long time_ms() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000LL + tv.tv_usec / 1000LL;
+}
 
-    if (p.redirectStdoutFile.empty())
-        p.redirectStdoutFile = p.tmpDir + "/" + p.randomToken + ".out";
-    if (p.redirectStderrFile.empty())
-        p.redirectStderrFile = p.tmpDir + "/" + p.randomToken + ".err";
+static process_outcome run(process& p) {
+    if (p.redirectStdoutFile.empty()) {
+	char name[] = "/tmp/process_output_XXXXXX";
+	close(mkstemp(name));
+        p.redirectStdoutFile = name;
+    }
+    
+    if (p.redirectStderrFile.empty()) {
+	char name[] = "/tmp/process_error_XXXXXX";
+	close(mkstemp(name));
+        p.redirectStderrFile = name;
+    }
 
     process_outcome result;
     p.consumedMemory = p.consumedTime = 0LL;
     p.state = FAILED;
     p.exitCode = -1;
     p.completed = false;
-    p.comment = "Can't fork().";    
+    p.comment = "Can't fork().";
+    long long start = time_ms();
     
     if (!(p.pid = fork()))
         execute(p);
     else {
         if (p.pid > 0)
             waitFor(p);
+        kill(p.pid, SIGKILL);
         result.state = p.state;
         result.exit_code = p.exitCode;
         result.time = p.consumedTime;
@@ -329,6 +388,7 @@ static process_outcome run(process& p) {
         result.output_file = p.redirectStdoutFile;
         result.error_file = p.redirectStderrFile;
         result.comment = p.comment;
+        result.passed_time = time_ms() - start;
     }
     
     return result;
@@ -343,6 +403,7 @@ process_outcome run(const std::string& command_line, const process_params& param
     p.redirectStdinFile = params.input_file;
     p.redirectStdoutFile = params.output_file;
     p.redirectStderrFile = params.error_file;
+    p.checkIdleness = params.check_idleness;
     
     vector<string> args = tokenizeCommandLine(command_line);
     p.commandLine = args[0];
@@ -350,5 +411,3 @@ process_outcome run(const std::string& command_line, const process_params& param
 	p.args.push_back(args[i]);
     return run(p);
 }
-
-
