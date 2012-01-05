@@ -20,10 +20,10 @@ void runexe::showInfo()
 {
     cout << endl
         << "RunExe for Windows NT, Version " << version << endl
-        << "Copyright(c) Saratov SU Codecenter Development Team, "
+        << "Copyright(c) Saratov State U Codecenter Development Team, "
         << copyrightYears << endl
         << "Based on runlib by Paul P. Komkoff Jr." << endl
-        << "Written by Dmitry Levshunov" << endl << endl
+        << "Written by Dmitry Levshunov, Mike Mirzayanov" << endl << endl
         << "Use \"runexe -h\" to get help information" << endl;    
 }
 
